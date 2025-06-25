@@ -1,6 +1,6 @@
 from typing import Optional
 
-from files.Piece import Piece, PieceNotationMap
+from ChessGame.Piece import Piece, PieceNotationMap
 
 
 class Board:
@@ -9,9 +9,9 @@ class Board:
 
   def __init__(self):
     self.board: list[Optional[Piece]] = [None for _ in range(64)]
-    self._initialize_board()
+    self._initializeBoard()
 
-  def _initialize_board(self):
+  def _initializeBoard(self):
     board_index = 0
     for char in self.START_PIECES_STRING:
       if char.isdigit():
@@ -23,14 +23,18 @@ class Board:
         self.board[board_index] = Piece(piece_type, piece_color)
         board_index += 1
 
-  def get_piece(self, pos: int) -> Optional[Piece]:
+  def getPieceAtPosition(self, pos: int) -> Optional[Piece]:
     return self.board[pos]
 
-  def move_piece(self, from_pos: int, to_pos: int):
-    piece = self.get_piece(from_pos)
-    if piece is not None:
-      self.board[to_pos] = piece
-      self.board[from_pos] = None
+  def movePiece(self, from_pos: tuple[int, int], to_pos: tuple[int, int]) -> None:
+    from_index = from_pos[0] * 8 + from_pos[1]
+    to_index = to_pos[0] * 8 + to_pos[1]
 
-  def remove_piece(self, pos: int):
-    self.board[pos] = None
+    if (
+      from_index == to_index or
+      self.board[from_index] is None or
+      self.board[to_index] is not None
+    ): return;
+
+    self.board[to_index] = self.board[from_index]
+    self.board[from_index] = None

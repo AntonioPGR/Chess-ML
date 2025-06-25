@@ -1,4 +1,6 @@
 from enum import Enum
+import os
+import pygame
 
 class PieceType(Enum):
   PAWN = "pawn"
@@ -41,3 +43,10 @@ class Piece:
     self.type = pieceType
     self.color = color
     self.size = PiecesSizes[pieceType]
+    self._loadImage()
+
+  def _loadImage(self):
+    base_path = os.path.join(os.path.dirname(__file__), "assets")
+    filename = f"{self.color.value}-{self.type.value}.png"
+    full_path = os.path.join(base_path, filename)
+    self.image = pygame.image.load(full_path)
