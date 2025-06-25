@@ -1,11 +1,12 @@
 from typing import Optional
 
-from ChessGame.Piece import Piece, PieceNotationMap
+from ChessGame.Piece import Piece, PieceNotationMap, PieceColor
 
 
 class Board:
 
   START_PIECES_STRING = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
+  turnColor = PieceColor.WHITE
 
   def __init__(self):
     self.board: list[Optional[Piece]] = [None for _ in range(64)]
@@ -29,12 +30,12 @@ class Board:
   def movePiece(self, from_pos: tuple[int, int], to_pos: tuple[int, int]) -> None:
     from_index = from_pos[0] * 8 + from_pos[1]
     to_index = to_pos[0] * 8 + to_pos[1]
-
     if (
       from_index == to_index or
       self.board[from_index] is None or
-      self.board[to_index] is not None
+      self.board[from_index].color != self.turnColor or
+      (self.board[to_index] is not None and self.board[to_index].color == self.turnColor)
     ): return;
-
     self.board[to_index] = self.board[from_index]
     self.board[from_index] = None
+    self.turnColor = PieceColor.BLACK if self.turnColor == PieceColor.WHITE else PieceColor.WHITE

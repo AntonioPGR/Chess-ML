@@ -32,18 +32,23 @@ class BoardUI:
         y = tile_y + (self.SQUARE_SIZE - piece_height) // 2
         self.screen.blit(piece.image, (x, y))
 
-  def handleClick(self, x: int, y: int):
+  def pixelToSquare(self, pos: tuple[int, int]) -> tuple[int, int]:
+    x, y = pos
     col = (x - self.BORDER_SIZE) // self.SQUARE_SIZE
     row = (y - self.BORDER_SIZE) // self.SQUARE_SIZE
+    return row, col
 
-    if not (0 <= row < 8 and 0 <= col < 8):
-        return
+  def isOnBoard(self, row: int, col: int) -> bool:
+    return 0 <= row < 8 and 0 <= col < 8
 
-    if self.selectedPiece is None:
-        if self.board.getPieceAtPosition(row * 8 + col) is not None:
-            self.selectedPiece = (row, col)
-        return
-
-    self.board.movePiece(self.selectedPiece, (row, col))
+  def handleClick(self, from_pos: tuple[int, int], to_pos: tuple[int, int]):
+    row_from, col_from = self.pixelToSquare(from_pos)
+    row_to, col_to = self.pixelToSquare(to_pos)
+    if (
+      not self.isOnBoard(row_from, col_from) or
+      not self.isOnBoard(row_to, col_to) or
+      (row_from == row_to and col_from == col_to)
+    ): return
+    self.board.movePiece((row_from, col_from), (row_to, col_to))
     self.selectedPiece = None
     self.renderBoard()
