@@ -1,6 +1,10 @@
+from abc import abstractmethod, ABC
 from enum import Enum
 import os
 import pygame
+
+from ChessGame.Board import Board
+
 
 class PieceType(Enum):
   PAWN = "pawn"
@@ -38,8 +42,12 @@ PieceNotationMap = {
   'P': (PieceType.PAWN, PieceColor.WHITE),
 }
 
-class Piece:
-  def __init__(self, pieceType: PieceType, color: PieceColor):
+class Piece(ABC):
+  def __init__(
+    self,
+    pieceType: PieceType,
+    color: PieceColor,
+  ):
     self.type = pieceType
     self.color = color
     self.size = PiecesSizes[pieceType]
@@ -50,3 +58,15 @@ class Piece:
     filename = f"{self.color.value}-{self.type.value}.png"
     full_path = os.path.join(base_path, filename)
     self.image = pygame.image.load(full_path)
+
+  @abstractmethod
+  def valid_moves(self, board_state:Board, position:int):
+    """Override in subclasses with piece-specific logic."""
+    pass
+
+class Pawn(Piece):
+    def __init__(self, color: PieceColor):
+      super().__init__(PieceType.PAWN, color)
+
+    def valid_moves(self, board_state:Board, position:int) -> list[int]:
+      return []

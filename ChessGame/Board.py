@@ -1,5 +1,4 @@
 from typing import Optional
-
 from ChessGame.Piece import Piece, PieceNotationMap, PieceColor
 
 
@@ -24,18 +23,32 @@ class Board:
         self.board[board_index] = Piece(piece_type, piece_color)
         board_index += 1
 
+  def getPositionFromRowAndColumn(self, pos: tuple[int, int]) -> int:
+    return pos[0] * 8 + pos[1]
+
   def getPieceAtPosition(self, pos: int) -> Optional[Piece]:
     return self.board[pos]
 
-  def movePiece(self, from_pos: tuple[int, int], to_pos: tuple[int, int]) -> None:
-    from_index = from_pos[0] * 8 + from_pos[1]
-    to_index = to_pos[0] * 8 + to_pos[1]
+  def isValidMove(self, from_pos: tuple[int, int], to_pos: tuple[int, int]) -> bool:
+    from_index = self.getPositionFromRowAndColumn(from_pos)
+    to_index = self.getPositionFromRowAndColumn(to_pos)
+    piece = self.board[from_index]
+    target = self.board[to_index]
+
     if (
-      from_index == to_index or
-      self.board[from_index] is None or
-      self.board[from_index].color != self.turnColor or
-      (self.board[to_index] is not None and self.board[to_index].color == self.turnColor)
-    ): return;
-    self.board[to_index] = self.board[from_index]
-    self.board[from_index] = None
+      piece is None or
+      piece.color != self.turnColor or
+      (target is not None and target.color == self.turnColor)
+    ):
+      return False
+    # TODO: implement piece-specific move rules
+    return True
+
+  def movePiece(self, from_pos: tuple[int, int], to_pos: tuple[int, int]) -> bool:
+    if not self.isValidMove(from_pos, to_pos):
+      return False
+    from_index = self.getPositionFromRowAndColumn(from_pos)
+    to_index = self.getPositionFromRowAndColumn(to_pos)
+    self.board[to_index], self.board[from_index] = self.board[from_index], None
     self.turnColor = PieceColor.BLACK if self.turnColor == PieceColor.WHITE else PieceColor.WHITE
+    return True
