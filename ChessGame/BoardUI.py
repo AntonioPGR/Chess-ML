@@ -1,6 +1,7 @@
 import pygame
 import os
-from ChessGame.Board import Board
+from Board import Board
+from BoardHelper import BoardHelper
 
 
 class BoardUI:
@@ -51,13 +52,12 @@ class BoardUI:
     row = (y - self.BORDER_SIZE) // self.SQUARE_SIZE
     return row, col
 
-  def isOnBoard(self, row: int, col: int) -> bool:
-    return 0 <= row < 8 and 0 <= col < 8
+
 
   def handleMouseDown(self, pos: tuple[int, int]):
     row, col = self.pixelToSquare(pos)
-    if not self.isOnBoard(row, col): return
-    index = self.board.getPositionFromRowAndColumn((row, col))
+    if not BoardHelper.isOnBoard(row, col): return
+    index = BoardHelper.getPositionFromRowAndColumn((row, col))
     piece = self.board.getPieceAtPosition(index)
     if not piece or piece.color != self.board.turnColor: return
     self.selectedPiece = index
@@ -70,8 +70,8 @@ class BoardUI:
     row_from, col_from = self.pixelToSquare(from_pos)
     row_to, col_to = self.pixelToSquare(to_pos)
     if (
-      not self.isOnBoard(row_from, col_from) or
-      not self.isOnBoard(row_to, col_to) or
+      not BoardHelper.isOnBoard(row_from, col_from) or
+      not BoardHelper.isOnBoard(row_to, col_to) or
       (row_from == row_to and col_from == col_to)
     ):
       self.selectedPiece = None

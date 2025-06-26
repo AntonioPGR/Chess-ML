@@ -1,6 +1,6 @@
 import pygame
-from ChessGame.Board import Board
-from ChessGame.BoardUI import BoardUI
+from Board import Board
+from BoardUI import BoardUI
 
 SCREEN_WIDTH = 784
 SCREEN_HEIGHT = 784
