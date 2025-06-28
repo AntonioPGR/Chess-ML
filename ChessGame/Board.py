@@ -1,7 +1,7 @@
 from typing import Optional
-
-from BoardHelper import BoardHelper
-from Piece import Piece, PieceNotationMap, PieceColor
+from Pieces.NotationMap import PieceNotationMap
+from Pieces.Piece import Piece, PieceColor
+from helpers.BoardPosition import BoardPosition
 
 
 class Board:
@@ -23,29 +23,30 @@ class Board:
         self.board[board_index] = PieceNotationMap[char]
         board_index += 1
 
-  def getPieceAtPosition(self, pos: int) -> Optional[Piece]:
+  def getPieceByBoardPosition(self, boardPos: BoardPosition) -> Optional[Piece]:
+    return self.getPieceByListPosition(boardPos.toListPosition())
+
+  def getPieceByListPosition(self, pos: int) -> Optional[Piece]:
     return self.board[pos]
 
-  def isValidMove(self, from_pos: tuple[int, int], to_pos: tuple[int, int]) -> bool:
-    from_index = BoardHelper.getPositionFromRowAndColumn(from_pos)
-    to_index = BoardHelper.getPositionFromRowAndColumn(to_pos)
-    piece = self.board[from_index]
-    target = self.board[to_index]
-
+  def isValidMove(self, fromPos: BoardPosition, toPos: BoardPosition) -> bool:
+    piece = self.board[fromPos.toListPosition()]
+    target = self.board[toPos.toListPosition()]
     if (
       piece is None or
       piece.color != self.turnColor or
       (target is not None and target.color == self.turnColor) or
-      not piece.isValidMove(from_pos, to_pos, self.board)
+      not (piece.isValidMove(fromPos, toPos, self.board) or piece.isSpecialMove(fromPos, toPos, self.board))
     ):
       return False
     return True
 
-  def movePiece(self, from_pos: tuple[int, int], to_pos: tuple[int, int]) -> bool:
+  def movePiece(self, from_pos: BoardPosition, to_pos: BoardPosition):
     if not self.isValidMove(from_pos, to_pos):
-      return False
-    from_index = BoardHelper.getPositionFromRowAndColumn(from_pos)
-    to_index = BoardHelper.getPositionFromRowAndColumn(to_pos)
-    self.board[to_index], self.board[from_index] = self.board[from_index], None
+        return
+    piece = self.board[from_pos.toListPosition()]
+    piece.saveMovent(from_pos, to_pos)
+    self.board[to_pos.toListPosition()] = piece
+    self.board[from_pos.toListPosition()] = None
     self.turnColor = PieceColor.BLACK if self.turnColor == PieceColor.WHITE else PieceColor.WHITE
-    return True
+

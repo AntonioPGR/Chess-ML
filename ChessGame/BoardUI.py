@@ -1,7 +1,8 @@
 import pygame
 import os
 from Board import Board
-from BoardHelper import BoardHelper
+from helpers.BoardPosition import BoardPosition
+from helpers.ScreenPosition import ScreenPosition
 
 
 class BoardUI:
@@ -34,7 +35,7 @@ class BoardUI:
     self.screen.blit(self.BOARD_BACKGROUND, (0, 0))
     dragged_piece = None
     for index in range(64):
-        piece = self.board.getPieceAtPosition(index)
+        piece = self.board.getPieceByListPosition(index)
         if piece is None:
             continue
         if index == self.selectedPiece:
@@ -46,36 +47,33 @@ class BoardUI:
         ox, oy = self.dragOffset
         self.screen.blit(dragged_piece.image, (mx - ox, my - oy))
 
-  def pixelToSquare(self, pos: tuple[int, int]) -> tuple[int, int]:
-    x, y = pos
-    col = (x - self.BORDER_SIZE) // self.SQUARE_SIZE
-    row = (y - self.BORDER_SIZE) // self.SQUARE_SIZE
-    return row, col
 
+  def handleMouseDown(self, screenPos: ScreenPosition):
+    boardPos = BoardPosition.fromScreenPosition(screenPos, self.BORDER_SIZE, self.SQUARE_SIZE)
+    if not boardPos.isOnBoard():
+      return
+    piece = self.board.getPieceByBoardPosition(boardPos)
+    if not piece or piece.color != self.board.turnColor:
+      return
 
+    self.selectedPiece = boardPos.toListPosition()
 
-  def handleMouseDown(self, pos: tuple[int, int]):
-    row, col = self.pixelToSquare(pos)
-    if not BoardHelper.isOnBoard(row, col): return
-    index = BoardHelper.getPositionFromRowAndColumn((row, col))
-    piece = self.board.getPieceAtPosition(index)
-    if not piece or piece.color != self.board.turnColor: return
-    self.selectedPiece = index
     w, h = piece.size
-    tile_x = self.BORDER_SIZE + col * self.SQUARE_SIZE
-    tile_y = self.BORDER_SIZE + row * self.SQUARE_SIZE
-    self.dragOffset = (pos[0] - (tile_x + (self.SQUARE_SIZE - w) // 2), pos[1] - (tile_y + (self.SQUARE_SIZE - h) // 2))
+    tile_x = self.BORDER_SIZE + boardPos.col * self.SQUARE_SIZE
+    tile_y = self.BORDER_SIZE + boardPos.row * self.SQUARE_SIZE
+    self.dragOffset = (screenPos.x - (tile_x + (self.SQUARE_SIZE - w) // 2), screenPos.y - (tile_y + (self.SQUARE_SIZE - h) // 2))
 
-  def handleMovePiece(self, from_pos: tuple[int, int], to_pos: tuple[int, int]):
-    row_from, col_from = self.pixelToSquare(from_pos)
-    row_to, col_to = self.pixelToSquare(to_pos)
+
+  def handleMovePiece(self, screenFromPos: ScreenPosition, screenToPos: ScreenPosition):
+    boardFromPos = BoardPosition.fromScreenPosition(screenFromPos, self.BORDER_SIZE, self.SQUARE_SIZE)
+    boardToPos = BoardPosition.fromScreenPosition(screenToPos, self.BORDER_SIZE, self.SQUARE_SIZE)
     if (
-      not BoardHelper.isOnBoard(row_from, col_from) or
-      not BoardHelper.isOnBoard(row_to, col_to) or
-      (row_from == row_to and col_from == col_to)
+      not boardFromPos.isOnBoard() or
+      not boardToPos.isOnBoard() or
+      boardToPos.equals(boardFromPos)
     ):
       self.selectedPiece = None
       return
-    self.board.movePiece((row_from, col_from), (row_to, col_to))
+    self.board.movePiece(boardFromPos, boardToPos)
     self.selectedPiece = None
     self.dragOffset = (0, 0)

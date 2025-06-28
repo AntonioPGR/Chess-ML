@@ -1,6 +1,7 @@
 import pygame
 from Board import Board
 from BoardUI import BoardUI
+from helpers.ScreenPosition import ScreenPosition
 
 SCREEN_WIDTH = 784
 SCREEN_HEIGHT = 784
@@ -13,16 +14,17 @@ def loadGame():
   boardUi = BoardUI(screen, board)
 
   running = True
-  from_pos = None
+  from_pos : ScreenPosition | None = None
   while running:
     for event in pygame.event.get():
       if event.type == pygame.QUIT:
         running = False
       elif event.type == pygame.MOUSEBUTTONDOWN:
-        from_pos = event.pos
+        from_pos = ScreenPosition.fromTuple(event.pos)
         boardUi.handleMouseDown(from_pos)
       elif event.type == pygame.MOUSEBUTTONUP and from_pos:
-        boardUi.handleMovePiece(from_pos, event.pos)
+        to_pos = ScreenPosition.fromTuple(event.pos)
+        boardUi.handleMovePiece(from_pos, to_pos)
         from_pos = None
 
     boardUi.renderBoard()
