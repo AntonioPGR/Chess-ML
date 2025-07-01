@@ -1,7 +1,7 @@
 from typing import Optional
 from Pieces.Piece import Piece
 from Pieces.Settings import PieceColor, PieceType
-from helpers.BoardPosition import BoardPosition
+from Enums.BoardPosition import BoardPosition
 
 
 class Knight(Piece):

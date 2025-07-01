@@ -1,7 +1,7 @@
 from typing import Optional
-from Pieces.NotationMap import PieceNotationMap
+from Enums.NotationMap import PieceNotationMap
 from Pieces.Piece import Piece, PieceColor
-from helpers.BoardPosition import BoardPosition
+from Enums.BoardPosition import BoardPosition
 
 
 class Board:

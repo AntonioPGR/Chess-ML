@@ -4,8 +4,7 @@ from Pieces.Queen import Queen
 from Pieces.Rook import Rook
 from Pieces.Pawn import Pawn
 from Pieces.King import King
-from Pieces.Settings import PieceColor
-
+from Enums.PieceColor import PieceColor
 
 PieceNotationMap = {
   'r': Rook(PieceColor.BLACK),

@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import os
 import pygame
 from Pieces.Settings import PieceType, PieceColor, PieceSize
-from helpers.BoardPosition import BoardPosition
+from Enums.BoardPosition import BoardPosition
 from helpers.Moves import Move
 
 

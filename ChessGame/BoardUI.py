@@ -1,8 +1,8 @@
 import pygame
 import os
 from Board import Board
-from helpers.BoardPosition import BoardPosition
-from helpers.ScreenPosition import ScreenPosition
+from Enums.BoardPosition import BoardPosition
+from Enums.ScreenPosition import ScreenPosition
 
 
 class BoardUI:

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from helpers.ScreenPosition import ScreenPosition
+from Enums.ScreenPosition import ScreenPosition
 
 
 @dataclass(frozen=True)

@@ -1,7 +1,7 @@
 import pygame
 from Board import Board
 from BoardUI import BoardUI
-from helpers.ScreenPosition import ScreenPosition
+from Enums.ScreenPosition import ScreenPosition
 
 SCREEN_WIDTH = 784
 SCREEN_HEIGHT = 784
